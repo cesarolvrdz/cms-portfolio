@@ -1,18 +1,15 @@
 [build]
-builder = "nixpacks"
-buildCommand = "composer install --no-dev && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "php artisan migrate --force && php artisan storage:link && vendor/bin/heroku-php-nginx -C nginx.conf public/"
+healthcheckPath = "/health"
+healthcheckTimeout = 100
 restartPolicyType = "on_failure"
+strategy = "rolling"
 
 [[services]]
 name = "web"
-envVars = [
-    { key = "APP_NAME", value = "CMS Portafolio" },
-    { key = "APP_ENV", value = "production" },
-    { key = "APP_DEBUG", value = "false" },
-    { key = "LOG_CHANNEL", value = "stack" },
-    { key = "DB_CONNECTION", value = "pgsql" },
-    { key = "FILESYSTEM_DISK", value = "public" }
-]
+type = "web"
+plan = "starter"
+numReplicas = 1
